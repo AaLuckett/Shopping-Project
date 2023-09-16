@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
     <title>Shopping List</title>
@@ -84,18 +85,24 @@
         <!-- Your shopping list items will be added here -->
     </ul>
 
+    <
     <script>
-        // JavaScript code to handle adding and checking off items
+        // JavaScript code to handle adding, checking off, and deleting items
         const shoppingForm = document.getElementById('shopping-form');
         const newItemInput = document.getElementById('new-item');
         const addButton = document.getElementById('add-button');
         const shoppingList = document.getElementById('shopping-list');
+
+        // Load saved items from localStorage on page load
+        const savedItems = JSON.parse(localStorage.getItem('shoppingItems')) || [];
+        savedItems.forEach(itemText => addItem(itemText));
 
         addButton.addEventListener('click', () => {
             const newItemText = newItemInput.value.trim();
             if (newItemText !== '') {
                 addItem(newItemText);
                 newItemInput.value = '';
+                saveItems();
             }
         });
 
@@ -105,6 +112,7 @@
                 if (newItemText !== '') {
                     addItem(newItemText);
                     newItemInput.value = '';
+                    saveItems();
                 }
             }
         });
@@ -116,18 +124,38 @@
             const label = document.createElement('label');
             label.textContent = text;
 
+            // Add a delete button
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.className = 'delete-button';
+
+            // Delete item when the button is clicked
+            deleteButton.addEventListener('click', () => {
+                listItem.remove();
+                saveItems();
+            });
+
             checkbox.addEventListener('change', (event) => {
                 if (event.target.checked) {
                     label.classList.add('completed');
                 } else {
                     label.classList.remove('completed');
                 }
+                saveItems();
             });
 
             listItem.appendChild(checkbox);
             listItem.appendChild(label);
+            listItem.appendChild(deleteButton); // Add the delete button
             shoppingList.appendChild(listItem);
         }
+
+        function saveItems() {
+            const items = Array.from(shoppingList.querySelectorAll('label')).map(label => label.textContent);
+            localStorage.setItem('shoppingItems', JSON.stringify(items));
+        }
     </script>
+</body>
+</html>
 </body>
 </html>
